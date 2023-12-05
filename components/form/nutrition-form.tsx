@@ -170,10 +170,21 @@ export function NutritionForm({
           </div>
         </div>
         {prompting ? (
-          <Button className="flex items-center gap-2" disabled>
-            <Icons.loader className="mr-2 h-4 w-4 animate-spin" />
-            Generating Meal Plan
-          </Button>
+          <div className="w-full flex flex-col">
+            <Button className="flex items-center gap-2" disabled>
+              <Icons.loader className="mr-2 h-4 w-4 animate-spin" />
+              Generating Meal Plan
+            </Button>
+            <div className="flex flex-col items-center w-full">
+              <span className="w-[90%] text-center">
+                This may take a little time. Please do not navigate away from
+                the page.
+              </span>
+              <span className="text-center">
+                <strong>LET HIM COOK!</strong>
+              </span>
+            </div>
+          </div>
         ) : (
           <Button type="submit">Generate Meal Plan</Button>
         )}

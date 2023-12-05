@@ -6,6 +6,15 @@ type NutritionFormValues = {
   dietType: string;
 };
 
+type RegenerateFormValues = {
+  protein: number;
+  carbs: number;
+  fats: number;
+  calories: number;
+  dietType: string;
+  mealType: string;
+};
+
 export const triggerPrompt = async (values: any) => {
   const response: any = await fetch("/prompt", {
     method: "POST",
@@ -38,34 +47,6 @@ export const parseMealPlanResponse = (response: string) => {
   }
   return JSON.parse(response);
 };
-
-export const triggerTestPrompt = async (values: any) => {
-  const response: any = await fetch("/test-route", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ values }),
-  });
-  return response;
-};
-
-// export const constructPrompt = (values: NutritionFormValues) => {
-//   let dietTypeDescription =
-//     values.dietType === "None" ? "" : `for a ${values.dietType} diet type`;
-//   return `Can you create a  meal plan ${dietTypeDescription} based on these details and return it in JSON format? The details are: Overall Macros: ${values.protein} grams of protein, ${values.carbs} grams of carbs, ${values.fats} grams of fats; Total Daily Calories: ${values.calories}.
-//           Please structure each meal (breakfast, lunch, dinner, and snacks) as a key in the returned JSON object. Each meal should be an object with the following structure:
-//           {
-//             "calories": [number of calories],
-//             "macros": {"protein": [amount in grams], "fats": [amount in grams], "carbs": [amount in grams]},
-//             "ingredients": [
-//               {"name": [ingredient name], "amount": [amount of the ingredient and measurement]},
-//               ...
-//             ],
-//             dietType: [kind of diet type if applicable] on each meal object (if no diet type is in prompt you can set this as null)
-//           }
-//           Please ensure that the macros and calorie count align with the overall daily goals. Also ensure to just return the object as the response.`;
-// };
 
 export const constructPrompt = (values: NutritionFormValues) => {
   let dietTypeDescription =

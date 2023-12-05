@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { OpenAIStream, StreamingTextResponse } from "ai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY as string,
@@ -7,22 +7,12 @@ const openai = new OpenAI({
 
 export const runtime = "edge";
 
-type NutritionFormValues = {
-  protein: number;
-  carbs: number;
-  fats: number;
-  calories: number;
-  dietType: string;
-};
-
 export async function POST(request: Request) {
-  // const response = await request.json();
-  // const values = response.values as NutritionFormValues;
-  // let prompt = constructPrompt(values);
-  // console.log({ prompt });
   console.log("TRIGGER PROMPT HANDLER");
   const { prompt } = await request.json();
-  const chatCompletion = await openai.chat.completions.create({
+  const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    stream: true,
     messages: [
       {
         role: "system",
@@ -34,28 +24,9 @@ export async function POST(request: Request) {
         content: prompt,
       },
     ],
-    model: "gpt-3.5-turbo",
+    temperature: 0.1,
+    top_p: 1,
   });
-
-  return NextResponse.json({
-    message: "Successful Get",
-    promptResponse: chatCompletion,
-  });
-}
-
-function constructPrompt(values: NutritionFormValues) {
-  let dietTypeDescription =
-    values.dietType === "None" ? "" : `for a ${values.dietType} diet type`;
-  return `Can you create a  meal plan ${dietTypeDescription} based on these details and return it in JSON format? The details are: Overall Macros: ${values.protein} grams of protein, ${values.carbs} grams of carbs, ${values.fats} grams of fats; Total Daily Calories: ${values.calories}. 
-          Please structure each meal (breakfast, lunch, dinner, and snacks) as a key in the returned JSON object. Each meal should be an object with the following structure:
-          {
-            "calories": [number of calories],
-            "macros": {"protein": [amount in grams], "fats": [amount in grams], "carbs": [amount in grams]},
-            "ingredients": [
-              {"name": [ingredient name], "amount": [amount of the ingredient and measurement]},
-              ...
-            ],
-            dietType: [kind of diet type if applicable] on each meal object (if no diet type is in prompt you can set this as null)
-          }
-          Please ensure that the macros and calorie count align with the overall daily goals.`;
+  const stream = OpenAIStream(response);
+  return new StreamingTextResponse(stream);
 }

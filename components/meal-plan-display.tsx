@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Icons } from "./icons";
 import { Button } from "./ui/button";
 import {
@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/tooltip";
 import { useDialog } from "./providers/dialog-provider";
 import {
-  triggerRegeneratePrompt,
   parseMealPlanResponse,
+  constructSingleMealPrompt,
 } from "@/lib/prompt-fns";
+
+import { useCompletion } from "ai/react";
 
 export function MealPlanDisplay({
   mealPlan,
@@ -81,58 +83,45 @@ const MealSectionDisplay = ({
   setMealPlan: Dispatch<SetStateAction<any>>;
 }) => {
   let { toggleSubOnlyDialog, toggleUpgradeDialog } = useDialog();
-  const [regenerating, setRegenerating] = useState<boolean>(false);
 
-  let STUB_LOGIN = true;
+  const { complete, isLoading } = useCompletion({
+    api: "/prompt",
+  });
 
   const handleRegnerateMeal = async (plan: any, type: string) => {
     // If user is subscribed - PRO - they will be able to regenerate
     // If user is subscirbed as - FREE - they will be prompted with the upgrade dialog
     // If user is not logged in trigger Sub Dialog
-
     let values = {
       ...plan.macros,
       calories: plan.calories,
       dietType: plan.dietType,
       mealType: type,
     };
-    console.log({ values });
     regenerate(values);
     // toggleUpgradeDialog();
-    if (STUB_LOGIN) {
-      return;
-    }
     // toggleSubOnlyDialog();
   };
 
-  const regenerate = async (values: any) => {
-    try {
-      setRegenerating(true);
-      console.log("prompting single meal");
-      let response = await triggerRegeneratePrompt(values);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      setRegenerating(false);
-      const data = await response.json();
-      let mealPlan = data.promptResponse.choices[0].message.content;
-      let parsedMealPlan = parseMealPlanResponse(mealPlan);
-      console.log("got single meal plan: ", parsedMealPlan);
+  const regenerate = useCallback(
+    async (values: any) => {
+      let prompt = constructSingleMealPrompt(values);
+      const completion = await complete(prompt);
+      if (!completion) throw new Error("Failed to get meal plan. Try again.");
+      const result = parseMealPlanResponse(completion);
       let lowerCaseMealType = values.mealType.toLowerCase();
       let capitalizedMealType =
         lowerCaseMealType.charAt(0).toUpperCase() + lowerCaseMealType.slice(1);
-      const mealData = parsedMealPlan[capitalizedMealType];
+      const mealData = result[capitalizedMealType];
       setMealPlan((prevMealPlan: any) => {
         return {
           ...prevMealPlan,
           [lowerCaseMealType]: mealData,
         };
       });
-    } catch (err) {
-      console.error(err);
-      setRegenerating(false);
-    }
-  };
+    },
+    [complete]
+  );
 
   return (
     <div className="flex space-x-4 items-start">
@@ -163,7 +152,7 @@ const MealSectionDisplay = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              {regenerating ? (
+              {isLoading ? (
                 <Button variant="outline" disabled size="icon">
                   <Icons.loader className="h-4 w-4 animate-spin" />
                 </Button>
