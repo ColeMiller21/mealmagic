@@ -25,7 +25,6 @@ export function MealPlanDisplay({
 }) {
   if (!mealPlan) return null;
   let { breakfast, lunch, dinner, snacks } = mealPlan;
-  console.log(breakfast);
   return (
     <section className="w-full mx-auto p-4 md:p-6 lg:p-8 space-y-8">
       <div className="flex flex-col space-y-4 md:space-y-6 lg:space-y-8">

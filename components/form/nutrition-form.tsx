@@ -176,11 +176,11 @@ export function NutritionForm({
               Generating Meal Plan
             </Button>
             <div className="flex flex-col items-center w-full">
-              <span className="w-[90%] text-center">
+              <span className="w-[90%] text-center text-sm italic">
                 This may take a little time. Please do not navigate away from
                 the page.
               </span>
-              <span className="text-center">
+              <span className="text-center text-sm">
                 <strong>LET HIM COOK!</strong>
               </span>
             </div>
