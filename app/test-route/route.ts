@@ -18,10 +18,11 @@ type RegenerateFormValues = {
 };
 
 export async function POST(request: Request) {
-  const req = await request.json();
-  const values = req.values as RegenerateFormValues;
-  let prompt = constructSingleMealPrompt(values);
+  console.log("TRIGGER PROMPT HANDLER");
+  const { prompt } = await request.json();
   const response = await openai.chat.completions.create({
+    model: "gpt-3.5-turbo",
+    stream: true,
     messages: [
       {
         role: "system",
@@ -33,18 +34,13 @@ export async function POST(request: Request) {
         content: prompt,
       },
     ],
-    model: "gpt-3.5-turbo",
-    stream: true,
+    temperature: 0.1,
+    top_p: 1,
   });
-
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response);
   // Respond with the stream
   return new StreamingTextResponse(stream);
-  // return NextResponse.json({
-  //   message: "Successful Get",
-  //   promptResponse: chatCompletion,
-  // });
 }
 
 function constructSingleMealPrompt(values: any) {

@@ -16,10 +16,12 @@ type NutritionFormValues = {
 };
 
 export async function POST(request: Request) {
-  const response = await request.json();
-  const values = response.values as NutritionFormValues;
-  let prompt = constructPrompt(values);
-  console.log({ prompt });
+  // const response = await request.json();
+  // const values = response.values as NutritionFormValues;
+  // let prompt = constructPrompt(values);
+  // console.log({ prompt });
+  console.log("TRIGGER PROMPT HANDLER");
+  const { prompt } = await request.json();
   const chatCompletion = await openai.chat.completions.create({
     messages: [
       {
