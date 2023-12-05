@@ -38,7 +38,6 @@ export const triggerRegeneratePrompt = async (values: any) => {
 };
 
 export const parseMealPlanResponse = (response: string) => {
-  console.log({ response });
   if (response.includes("json")) {
     const jsonStart = response.indexOf("```json\n{");
     const jsonEnd = response.lastIndexOf("}\n```") + 1;

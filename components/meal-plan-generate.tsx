@@ -18,7 +18,6 @@ export function MealPlanGenerate() {
       const completion = await complete(c);
       if (!completion) throw new Error("Failed to get meal plan. Try again.");
       const result = parseMealPlanResponse(completion);
-      console.log(result);
       setMealPlan(result);
     },
     [complete]
