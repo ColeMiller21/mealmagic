@@ -20,7 +20,6 @@ export async function POST(request: Request) {
   const response = await request.json();
   const values = response.values as RegenerateFormValues;
   let prompt = constructSingleMealPrompt(values);
-  console.log({ prompt });
   const chatCompletion = await openai.chat.completions.create({
     messages: [
       {
