@@ -29,7 +29,11 @@ export function GetSubscriptionDialog() {
         </div>
         <div className="w-full flex flex-col ">
           <div className="w-full flex gap-6">
-            <Button variant={"outline"} className="w-full">
+            <Button
+              variant={"outline"}
+              className="w-full"
+              onClick={toggleSubOnlyDialog}
+            >
               Not Now
             </Button>
             <Button className="w-full">Sign Up</Button>

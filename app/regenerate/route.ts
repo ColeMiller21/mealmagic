@@ -5,6 +5,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY as string,
 });
 
+export const runtime = "edge";
+
 type RegenerateFormValues = {
   protein: number;
   carbs: number;
