@@ -134,7 +134,7 @@ export const constructNewIngredientPrompt = (
     ingredient.name
   } in this meal = ${JSON.stringify(
     meal
-  )} (which is a stringified json object) and provide a list of five food alternatives with a similar macronutrient profile.
+  )} (which is a stringified json object) and provide a list of five food alternatives with a similar macronutrient profile and a variety of types of food if possible.
   
 
 
