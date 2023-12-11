@@ -102,3 +102,60 @@ Please format the meal plan as a JSON object with this structure:
 
 The macros and calorie count should be accurately represented for the specified ${mealTypeLowercase} meal.`;
 };
+
+const constructMacrosPrompt = () => {
+  //   Given the following user information, calculate the recommended daily calorie intake and macronutrient distribution for fitness goals:
+  // - Age: 30
+  // - Gender: Male
+  // - Height: 180 cm
+  // - Current Weight: 80 kg
+  // - Fitness Goal: Weight loss
+  // - Target Weight: 75 kg
+  // - Activity Level: Moderately active (Jogging 30 minutes daily, weight training 3 times a week)
+  // - Dietary Restrictions: Lactose intolerant
+  // - Health Conditions: None
+  // - Previous Diet Experience: Moderate success with high-protein diets
+  // - Daily Routine: 9-5 office job, mostly sedentary
+  // - Sleep Pattern: 7 hours per night
+  // - Stress Level: Moderate
+  // - Body Fat Percentage: 25%
+  // - Meal Frequency Preference: Several small meals throughout the day
+  // Please provide a calculation of the daily caloric needs based on the Harris-Benedict equation and suggest a macronutrient split for weight loss (percentage of calories from carbohydrates, proteins, and fats).
+};
+
+export const constructNewIngredientPrompt = (
+  ingredient: {
+    name: string;
+    amount: number | string;
+  },
+  meal: any
+) => {
+  const prompt = `Can you find a 3-5 replacements for ${ingredient.amount} of ${
+    ingredient.name
+  } in this meal = ${JSON.stringify(
+    meal
+  )} (which is a stringified json object) and provide a list of five food alternatives with a similar macronutrient profile.
+  
+
+
+                  Please return the response is in this structure:
+                  [
+                    { name: [string], amount: [string]},
+                    ...
+                  ]
+                  
+                  Respond only with the completed JSON object, without any additional explanatory or descriptive text. The JSON should be complete and ready for parsing.`;
+  return prompt;
+};
+
+const constructRecipe = () => {
+  //   Breakfast
+  // Calories: 500 kcal
+  // Macros: 45g protein - 55g carbs - 10g fat
+  // 100g Tempeh
+  // 2 slices Sourdough Bread
+  // 1/4 cup Cottage Cheese
+  // 1 cup Spinach
+  // Plan object!
+  // Based on these exact ingredients and amounts unless it contains 0 calories what are some meals you could make? Could you generate 2 different ideas
+};

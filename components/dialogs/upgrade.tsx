@@ -1,10 +1,10 @@
 "use client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import { useDialog } from "../providers/dialog-provider";
+import { useAuthDialog } from "../providers/auth-dialog-provider";
 
 export function UpgradeDialog() {
-  let { isUpgradeDialogOpen, toggleUpgradeDialog } = useDialog();
+  let { isUpgradeDialogOpen, toggleUpgradeDialog } = useAuthDialog();
   return (
     <Dialog open={isUpgradeDialogOpen} onOpenChange={toggleUpgradeDialog}>
       <DialogContent className="w-full flex flex-col  items-center gap-8">

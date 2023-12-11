@@ -19,13 +19,17 @@ interface DialogContextType {
   toggleUpgradeDialog: () => void;
 }
 
-const DialogContext = createContext<DialogContextType | undefined>(undefined);
+const AuthDialogContext = createContext<DialogContextType | undefined>(
+  undefined
+);
 
 interface DialogProviderProps {
   children: ReactNode;
 }
 
-export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
+export const AuthDialogProvider: React.FC<DialogProviderProps> = ({
+  children,
+}) => {
   const [isSubOnlyDialogOpen, setIsSubOnlyDialogOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false);
@@ -43,7 +47,7 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
   };
 
   return (
-    <DialogContext.Provider
+    <AuthDialogContext.Provider
       value={{
         isSubOnlyDialogOpen,
         setIsSubOnlyDialogOpen,
@@ -57,12 +61,12 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({ children }) => {
       }}
     >
       {children}
-    </DialogContext.Provider>
+    </AuthDialogContext.Provider>
   );
 };
 
-export const useDialog = (): DialogContextType => {
-  const context = useContext(DialogContext);
+export const useAuthDialog = (): DialogContextType => {
+  const context = useContext(AuthDialogContext);
   if (context === undefined) {
     throw new Error("useDialog must be used within a DialogProvider");
   }

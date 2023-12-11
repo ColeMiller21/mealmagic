@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
 import { DietTypes } from "@/data/diet-types";
 import { Icons } from "../icons";
-import { useDialog } from "../providers/dialog-provider";
+import { useAuthDialog } from "../providers/auth-dialog-provider";
 
 const formSchema = z.object({
   protein: z
@@ -61,7 +61,7 @@ export function NutritionForm({
   onSubmit: (values: any) => Promise<void>;
   prompting: boolean;
 }) {
-  let { toggleSubOnlyDialog } = useDialog();
+  let { toggleSubOnlyDialog } = useAuthDialog();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -138,7 +138,7 @@ export function NutritionForm({
             name="dietType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Diet Restrictions</FormLabel>
+                <FormLabel>Diet Type</FormLabel>
                 <FormControl>
                   <Select {...field}>
                     <SelectTrigger className="w-[180px]">

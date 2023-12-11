@@ -5,11 +5,11 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { useDialog } from "../providers/dialog-provider";
+import { useAuthDialog } from "../providers/auth-dialog-provider";
 import { Icons } from "../icons";
 
 export function LoginDialog() {
-  let { isLoginDialogOpen, toggleLoginDialog } = useDialog();
+  let { isLoginDialogOpen, toggleLoginDialog } = useAuthDialog();
   const [email, setEmail] = useState<string>("");
   return (
     <Dialog open={isLoginDialogOpen} onOpenChange={toggleLoginDialog}>

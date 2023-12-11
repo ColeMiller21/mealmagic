@@ -2,10 +2,10 @@
 
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { useDialog } from "./providers/dialog-provider";
+import { useAuthDialog } from "./providers/auth-dialog-provider";
 import Link from "next/link";
 export function Navbar() {
-  let { toggleLoginDialog } = useDialog();
+  let { toggleLoginDialog } = useAuthDialog();
   let STUB_LOGIN = false;
   return (
     <nav className="w-full flex items-center justify-between py-3 px-2">

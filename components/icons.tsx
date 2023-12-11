@@ -14,6 +14,8 @@ import {
   Popcorn,
   Mail,
   Check,
+  Crosshair,
+  Pencil,
 } from "lucide-react";
 
 export const Icons = {
@@ -22,8 +24,10 @@ export const Icons = {
   sandwich: Sandwich,
   utensils: Utensils,
   popcorn: Popcorn,
+  crosshair: Crosshair,
   mail: Mail,
   check: Check,
+  pencil: Pencil,
   sun: SunMedium,
   wallet: Wallet,
   moon: Moon,

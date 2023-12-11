@@ -8,10 +8,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useDialog } from "./providers/dialog-provider";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+
+import { useAuthDialog } from "./providers/auth-dialog-provider";
 import {
   parseMealPlanResponse,
   constructSingleMealPrompt,
+  constructNewIngredientPrompt,
 } from "@/lib/prompt-fns";
 
 import { useCompletion } from "ai/react";
@@ -81,8 +89,16 @@ const MealSectionDisplay = ({
   type: string;
   setMealPlan: Dispatch<SetStateAction<any>>;
 }) => {
-  let { toggleSubOnlyDialog, toggleUpgradeDialog } = useDialog();
-
+  let { toggleSubOnlyDialog, toggleUpgradeDialog } = useAuthDialog();
+  const [selectedIngredientIndex, setSelectedIngredientIndex] = useState<
+    number | null
+  >(null);
+  const [ingredientOptions, setIngredientOptions] = useState([]);
+  const [generatingOptions, setGeneratingOptions] = useState<boolean>(false);
+  const [showReplaceView, setShowReplaceView] = useState<boolean>(false);
+  const [selectedReplacementIndex, setSelectedReplacementIndex] = useState<
+    number | null
+  >(null);
   const { complete, isLoading } = useCompletion({
     api: "/prompt",
   });
@@ -122,6 +138,49 @@ const MealSectionDisplay = ({
     [complete]
   );
 
+  const generateNewIngredientOptions = useCallback(
+    async (selectedIndex: number) => {
+      setGeneratingOptions(true);
+      toggleScreen();
+      let ingredient = plan.ingredients[selectedIndex];
+
+      let prompt = constructNewIngredientPrompt(ingredient, plan);
+
+      const completion = await complete(prompt);
+      if (!completion) {
+        setGeneratingOptions(false);
+        throw new Error("Failed to get meal plan. Try again.");
+      }
+      const result = parseMealPlanResponse(completion);
+      setGeneratingOptions(false);
+      setIngredientOptions(result);
+    },
+    [complete]
+  );
+
+  const toggleScreen = () => {
+    setShowReplaceView(!showReplaceView);
+  };
+
+  const resetSelections = () => {
+    setShowReplaceView(false);
+    setSelectedIngredientIndex(null);
+    setSelectedReplacementIndex(null);
+    setIngredientOptions([]);
+  };
+
+  const replaceIngredient = () => {
+    plan.ingredients[selectedIngredientIndex as number] =
+      ingredientOptions[selectedReplacementIndex as number];
+
+    setMealPlan((prevMealPlan: any) => {
+      return {
+        ...prevMealPlan,
+        [type]: plan,
+      };
+    });
+  };
+
   return (
     <div className="flex space-x-4 items-start">
       {displayIcon(type)}
@@ -137,7 +196,10 @@ const MealSectionDisplay = ({
 
         <ul className=" mt-2">
           {plan?.ingredients.map(
-            (ingredient: { name: string; amount: number }, i: number) => {
+            (
+              ingredient: { name: string; amount: number | string },
+              i: number
+            ) => {
               return (
                 <li key={`${ingredient}-${i}`} className="list-none">
                   {ingredient.amount} {ingredient.name}
@@ -147,7 +209,150 @@ const MealSectionDisplay = ({
           )}
         </ul>
       </div>
-      <div>
+      <div className="flex items-start gap-2">
+        <Dialog
+          onOpenChange={(e) => {
+            if (!e) resetSelections();
+          }}
+        >
+          <DialogTrigger>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Icons.crosshair className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Inspect</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </DialogTrigger>
+          <DialogContent>
+            {!showReplaceView ? (
+              <div id="meal-view">
+                <div className="flex flex-col items-center w-full">
+                  <h3 className="text-lg font-semibold">{type}</h3>
+                  <p className="text-sm font-bold text-muted-foreground">
+                    Calories: {plan?.calories} kcal
+                  </p>
+                  <p className="text-sm font-bold text-muted-foreground">
+                    Macros: {plan?.macros.protein}g protein -{" "}
+                    {plan?.macros.carbs}g carbs - {plan?.macros.fats}g fat
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 items-center my-2">
+                  <p className="italic text-sm">
+                    Select an ingredient below to find alternatives.
+                  </p>
+                  {plan?.ingredients.map(
+                    (
+                      ingredient: { name: string; amount: number | string },
+                      i: number
+                    ) => {
+                      return (
+                        <Button
+                          key={`${ingredient}-${i}`}
+                          variant={
+                            selectedIngredientIndex === i ? "default" : "ghost"
+                          }
+                          className="list-none flex gap-2 items-center"
+                          onClick={() => setSelectedIngredientIndex(i)}
+                        >
+                          <span>
+                            {ingredient.amount} {ingredient.name}
+                          </span>
+                        </Button>
+                      );
+                    }
+                  )}
+                </div>
+                <div className="w-full flex">
+                  <Button
+                    className="w-full"
+                    disabled={selectedIngredientIndex !== null ? false : true}
+                    onClick={() =>
+                      generateNewIngredientOptions(
+                        selectedIngredientIndex as number
+                      )
+                    }
+                  >
+                    Find alternatives
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center w-full bg-red min-h-full">
+                {generatingOptions && (
+                  <div className="flex flex-col items-center justify-center">
+                    <Icons.loader className="w-8 h-8 animate-spin" />
+                    <span className="text-sm italic">
+                      Searching for alternatives...
+                    </span>
+                  </div>
+                )}
+                {ingredientOptions.length > 0 && (
+                  <div className="w-full flex flex-col gap-3 items-center">
+                    <h6 className="font-bold">
+                      Alternatives for{" "}
+                      {
+                        plan?.ingredients[selectedIngredientIndex as number]
+                          ?.amount
+                      }{" "}
+                      {
+                        plan?.ingredients[selectedIngredientIndex as number]
+                          ?.name
+                      }
+                    </h6>
+                    {ingredientOptions.map(
+                      (
+                        option: { name: string; amount: string | number },
+                        i: number
+                      ) => {
+                        return (
+                          <Button
+                            key={i}
+                            variant={
+                              selectedReplacementIndex === i
+                                ? "default"
+                                : "outline"
+                            }
+                            onClick={() => setSelectedReplacementIndex(i)}
+                          >
+                            {option.name} {option.amount}
+                          </Button>
+                        );
+                      }
+                    )}
+                    <div className="w-full flex gap-4">
+                      <Button
+                        className="w-full"
+                        variant={"outline"}
+                        onClick={() => resetSelections()}
+                      >
+                        Back to meal
+                      </Button>
+
+                      <DialogClose asChild>
+                        <Button
+                          className="w-full"
+                          disabled={
+                            selectedReplacementIndex !== null ? false : true
+                          }
+                          onClick={() => replaceIngredient()}
+                        >
+                          Replace
+                        </Button>
+                      </DialogClose>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

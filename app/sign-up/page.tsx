@@ -39,7 +39,7 @@ const Heading = ({}: {
 };
 
 const PriceCards = ({ selected }: { selected: string }) => (
-  <div className="flex flex-col lg:flex-row lg:justify-center gap-8 lg:gap-4 w-full max-w-6xl mx-auto relative z-10">
+  <div className="flex flex-col items-center lg:flex-row lg:justify-center gap-8 lg:gap-4 w-full max-w-6xl mx-auto relative z-10">
     {/* FREE */}
     <div className="w-full p-6 border-[1px] border-slate-300 rounded-xl max-w-[350px] flex flex-col min-h-[450px]">
       <p className="text-3xl font-extrabold mb-2">FREE</p>

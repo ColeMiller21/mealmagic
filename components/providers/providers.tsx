@@ -1,5 +1,5 @@
 "use client";
-import { DialogProvider } from "./dialog-provider";
+import { AuthDialogProvider } from "./auth-dialog-provider";
 import { ThemeProvider } from "./theme-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -10,7 +10,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <DialogProvider>{children}</DialogProvider>
+      <AuthDialogProvider>{children}</AuthDialogProvider>
     </ThemeProvider>
   );
 }

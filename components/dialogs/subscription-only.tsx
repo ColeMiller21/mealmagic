@@ -1,11 +1,11 @@
 "use client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import { useDialog } from "../providers/dialog-provider";
+import { useAuthDialog } from "../providers/auth-dialog-provider";
 import Link from "next/link";
 
 export function GetSubscriptionDialog() {
-  let { isSubOnlyDialogOpen, toggleSubOnlyDialog } = useDialog();
+  let { isSubOnlyDialogOpen, toggleSubOnlyDialog } = useAuthDialog();
   return (
     <Dialog open={isSubOnlyDialogOpen} onOpenChange={toggleSubOnlyDialog}>
       <DialogContent className="w-full flex flex-col  items-center gap-8">

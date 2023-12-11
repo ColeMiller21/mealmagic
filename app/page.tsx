@@ -11,10 +11,11 @@ export default function Home() {
       </h1>
       <p className="text-center w-full text-xs md:text-base">
         Please enter your macro-nutrient preferences, including protein,
-        carbohydrates, and fats, as well as your total calorie intake and any
-        dietary restrictions. After completing the form, click on "Generate Meal
-        Plan." This action will use the information you've provided to create a
-        personalized meal plan that aligns with your specified details.
+        carbohydrates, and fats, as well as your total calorie intake{" "}
+        <strong>for a single day</strong> and any specific dietary types. After
+        completing the form, click on "Generate Meal Plan." This action will use
+        the information you've provided to create a personalized meal plan that
+        aligns with your specified details.
       </p>
       <MealPlanGenerate />
     </main>
